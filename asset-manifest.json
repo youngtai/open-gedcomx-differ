@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/open-gedcomx-differ/static/css/main.f67c1751.css",
+    "main.js": "/open-gedcomx-differ/static/js/main.1f3ca0a3.js",
+    "static/js/787.8eed2c03.chunk.js": "/open-gedcomx-differ/static/js/787.8eed2c03.chunk.js",
+    "index.html": "/open-gedcomx-differ/index.html",
+    "main.f67c1751.css.map": "/open-gedcomx-differ/static/css/main.f67c1751.css.map",
+    "main.1f3ca0a3.js.map": "/open-gedcomx-differ/static/js/main.1f3ca0a3.js.map",
+    "787.8eed2c03.chunk.js.map": "/open-gedcomx-differ/static/js/787.8eed2c03.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f67c1751.css",
+    "static/js/main.1f3ca0a3.js"
+  ]
+}
