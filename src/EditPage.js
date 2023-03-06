@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {styled} from "@mui/material/styles";
 import FileUpload from "./FileUpload";
-import {Accordion, AccordionDetails, AccordionSummary, Box, Button, Grid, Tab, Tabs, Typography} from "@mui/material";
+import {Accordion, AccordionDetails, AccordionSummary, Box, Button, Grid, Stack, Tab, Tabs, Typography} from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import './MainPage.css';
 import PersonsDiff, {getPersonsIntersection} from "./persons-diff/PersonsDiff";
@@ -12,6 +12,8 @@ import {EMPTY_GEDCOMX} from "./constants";
 import DocumentsDiff, {getDocumentsIntersection} from "./documents-diff/DocumentsDiff";
 import GraphView from "./GraphView";
 import {FileDrop} from "react-file-drop";
+import {gx1} from './gx-1';
+import {gx2} from './gx-2';
 
 const RootContainer = styled('div')(({ theme }) => ({
   margin: theme.spacing(1),
@@ -184,6 +186,15 @@ export default function EditPage() {
     setRightFilename('');
   }
 
+  function handleLoadExample() {
+    setLeftGx(gx1);
+    setRightGx(gx2);
+    setLeftGxOriginal(gx1);
+    setRightGxOriginal(gx2);
+    setLeftFilename('left-example');
+    setRightFilename('right-example');
+  }
+
   return (
     <RootContainer sx={{background: 'white'}}>
       <FileDrop className='left-file-drop' onDrop={files => handleLeftFileDrop(files, setLeftGx)}>
@@ -195,20 +206,13 @@ export default function EditPage() {
       <Grid container direction='column' spacing={1}>
         <Grid item>
           <ItemContainer>
-            <Grid container justifyContent='space-between' alignItems='center'>
-              <Grid item>
-                <Typography variant='h6'>{leftFilename}</Typography>
-              </Grid>
-              <Grid item>
-                <FileUpload onChange={onFileUpload} allowedExtensions={['.json']}/>
-              </Grid>
-              <Grid item>
-                <Button onClick={handleClearData} variant='contained' color='secondary'>Clear Data</Button>
-              </Grid>
-              <Grid item>
-                <Typography variant='h6'>{rightFilename}</Typography>
-              </Grid>
-            </Grid>
+            <Stack direction='row' justifyContent='space-between' alignItems='center'>
+              <Typography variant='h6'>{leftFilename}</Typography>
+              <FileUpload onChange={onFileUpload} allowedExtensions={['.json']}/>
+              <Button onClick={handleClearData} variant='contained' color='secondary'>Clear Data</Button>
+              <Button onClick={handleLoadExample} variant='outlined' color='secondary'>Load Example</Button>
+              <Typography variant='h6'>{rightFilename}</Typography>
+            </Stack>
           </ItemContainer>
         </Grid>
         <Grid item>
