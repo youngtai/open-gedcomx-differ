@@ -5,6 +5,8 @@ The primary use-case of this tool is to be able to easily diff and correct a pai
 This project is a separately maintained copy of a tool developed for use within [FamilySearch](https://www.familysearch.org/en/), excluding code or features specific or proprietary to FamilySearch.
 
 ---
+### Try it at https://youngtai.github.io/open-gedcomx-differ/
+---
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
