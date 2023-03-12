@@ -68,7 +68,8 @@ export default function EditableFactAttribute({attributeData, fact, factIndex, p
   function factIsEmpty(fact) {
     const factKeys = Object.keys(fact).filter(key => fact[key] !== null);
     const factHasNoKeys = factKeys.length === 0;
-    const factHasNoContent = factKeys.filter(k => (k !== FACT_KEYS.primary && k !== FACT_KEYS.id) || (k !== FACT_KEYS.id)).length === 0;
+    const keysToExclude = [FACT_KEYS.primary, FACT_KEYS.id];
+    const factHasNoContent = factKeys.filter(k => !keysToExclude.includes(k)).length === 0;
     return factHasNoKeys || factHasNoContent;
   }
 
@@ -80,6 +81,10 @@ export default function EditableFactAttribute({attributeData, fact, factIndex, p
     }
     else {
       parentObject.facts.splice(factIndex, 1, fact);
+    }
+    // If there are no facts, rather than leaving fact: [] behind, just remove the fact key
+    if (parentObject.facts.length === 0) {
+      delete parentObject.facts;
     }
     updateData(parentObject, parentObjectIndex, recordsData);
   }

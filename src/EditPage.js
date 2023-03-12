@@ -70,8 +70,8 @@ export const rightRecordsData = (leftGx, setLeftGx, rightGx, setRightGx, finalGx
 export default function EditPage() {
   const cachedData = localStorage.getItem(CACHE_KEY) ? JSON.parse(localStorage.getItem(CACHE_KEY)) : null;
 
-  const [leftGxOriginal, setLeftGxOriginal] = useState();
-  const [rightGxOriginal, setRightGxOriginal] = useState();
+  const [leftGxOriginal, setLeftGxOriginal] = useState(cachedData ? cachedData.leftGxOriginal : EMPTY_GEDCOMX);
+  const [rightGxOriginal, setRightGxOriginal] = useState(cachedData ? cachedData.rightGxOriginal : EMPTY_GEDCOMX);
   const [leftGx, setLeftGx] = useState(cachedData ? cachedData.leftGx : EMPTY_GEDCOMX);
   const [rightGx, setRightGx] = useState(cachedData ? cachedData.rightGx : EMPTY_GEDCOMX);
   const [finalGx, setFinalGx] = useState(getGxIntersection(leftGx, rightGx));
@@ -181,6 +181,8 @@ export default function EditPage() {
   function handleClearData() {
     setLeftGx(EMPTY_GEDCOMX);
     setRightGx(EMPTY_GEDCOMX);
+    setLeftGxOriginal(EMPTY_GEDCOMX);
+    setRightGxOriginal(EMPTY_GEDCOMX);
     setFinalGx(getGxIntersection(EMPTY_GEDCOMX, EMPTY_GEDCOMX));
     setLeftFilename('');
     setRightFilename('');

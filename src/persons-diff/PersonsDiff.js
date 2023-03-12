@@ -75,7 +75,7 @@ function factsAreEqual(factA, factB) {
       }
       return !factA.qualifiers && !factB.qualifiers;
     } else if (factAKey === FACT_KEYS.id) {
-      //ids can be different because this tool is for diffing separately created GedcomX
+      //ids can be different because this tool is for diffing independently created GedcomX
       return true;
     } else {
       console.error(`Unexpected fact key ${factAKey}`);
@@ -110,6 +110,7 @@ function haveSameNameParts(partsA, partsB) {
 }
 
 function namesAreEqual(nameA, nameB) {
+  // We'll assume persons have a single nameForm for now
   const personANameForm = nameA?.nameForms[0];
   const personBNameForm = nameB?.nameForms[0];
   const fullTextEqual = personANameForm?.fullText === personBNameForm?.fullText;
@@ -136,7 +137,6 @@ export function haveSameNames(personA, personB) {
 }
 
 export function personsAreEqual(personA, personB) {
-  // We'll assume persons have a single name and nameForm
   if (personA?.names?.length !== personB?.names?.length) {
     return false;
   }
