@@ -8,7 +8,7 @@ export function getPersonById(id, persons) {
   return persons?.find(person => person.id === id);
 }
 
-function relationshipPersonsAreEqual(sideARelPerson, sideBRelPerson, sideAPersons, sideBPersons) {
+export function relationshipPersonsAreEqual(sideARelPerson, sideBRelPerson, sideAPersons, sideBPersons) {
   const personA = getPersonById(sideBRelPerson.resourceId, sideBPersons);
   const personB = getPersonById(sideARelPerson.resourceId, sideAPersons);
   return personsAreEqual(personA, personB);

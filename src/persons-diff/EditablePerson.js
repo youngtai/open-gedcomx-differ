@@ -197,6 +197,7 @@ export default function EditablePerson({person, personIndex}) {
                 parentObjectIndex={personIndex}
                 comparingTo={recordsData.comparingToGx.persons}
                 updateData={updatePersonsData}
+                factTypes={FACT_TYPE}
               />
             )})}
           {person && person.fields ? person.fields.map((field, idx) => {

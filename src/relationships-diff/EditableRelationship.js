@@ -110,6 +110,7 @@ export function EditableRelationship({rel, relIndex, persons}) {
                 parentObjectIndex={relIndex}
                 comparingTo={recordsData.comparingToGx.relationships}
                 updateData={factUpdateHandler}
+                factTypes={RELATIONSHIP_FACT_TYPE}
               />
             );
           })}
