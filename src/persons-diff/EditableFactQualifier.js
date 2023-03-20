@@ -3,7 +3,7 @@ import {DIFF_BACKGROUND_COLOR, FACT_KEYS, FACT_QUALIFIER, PERSON_FACT_BACKGROUND
 import {useContext, useEffect, useState} from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {RecordsDataContext} from "../RecordsContext";
-import {hasMatchingName} from "./EditableFactAttribute";
+import {personsWithMatchingNames} from "./EditableFactAttribute";
 import {Add} from "@mui/icons-material";
 
 function hasMatchingQualifier(attributeData, parentObject, comparingTo) {
@@ -11,12 +11,16 @@ function hasMatchingQualifier(attributeData, parentObject, comparingTo) {
     // For now, we're not highlighting relationship fact differences
     return true;
   }
-  const matchingPersonByName = hasMatchingName(parentObject, comparingTo);
-  if (matchingPersonByName) {
-    const factsWithMatchingKey = matchingPersonByName.facts?.filter(comparingFact => comparingFact[attributeData.key]);
-    return factsWithMatchingKey
-      .flatMap(comparingFact => comparingFact[attributeData.key])
-      .find(qualifier => JSON.stringify(qualifier) === JSON.stringify(attributeData.qualifier)) !== undefined;
+  const matchingPersonsByName = personsWithMatchingNames(parentObject, comparingTo);
+  if (matchingPersonsByName.length > 0) {
+    for (const matchingPersonByName of matchingPersonsByName) {
+      const factsWithMatchingKey = matchingPersonByName.facts?.filter(comparingFact => comparingFact[attributeData.key]);
+      if (factsWithMatchingKey
+          .flatMap(comparingFact => comparingFact[attributeData.key])
+          .find(qualifier => JSON.stringify(qualifier) === JSON.stringify(attributeData.qualifier)) !== undefined) {
+        return true;
+      }
+    }
   }
   return false;
 }

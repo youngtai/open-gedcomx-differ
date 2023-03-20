@@ -5,8 +5,8 @@ import {DIFF_BACKGROUND_COLOR, FACT_KEYS, FACT_TYPE, KEY_TO_LABEL_MAP, PERSON_FA
 import {RecordsDataContext} from "../RecordsContext";
 import {haveSameNames} from "./PersonsDiff";
 
-export function hasMatchingName(person, comparingTo) {
-  return comparingTo.find(p => haveSameNames(p, person));
+export function personsWithMatchingNames(person, comparingTo) {
+  return comparingTo.filter(p => haveSameNames(p, person));
 }
 
 function hasMatchingAttribute(attributeData, parentObject, comparingTo) {
@@ -14,15 +14,23 @@ function hasMatchingAttribute(attributeData, parentObject, comparingTo) {
     // For now, we're not highlighting relationship fact differences
     return true;
   }
-  const matchingPersonByName = hasMatchingName(parentObject, comparingTo);
-  if (matchingPersonByName) {
-    const factsWithMatchingKey = matchingPersonByName.facts?.filter(comparingFact => comparingFact[attributeData.key]);
-    if (attributeData.key === FACT_KEYS.date || attributeData.key === FACT_KEYS.place) {
-      return factsWithMatchingKey.find(comparingFact => comparingFact[attributeData.key].original === attributeData.value) !== undefined;
-    } else if (attributeData.key === FACT_KEYS.type) {
-      return factsWithMatchingKey.find(comparingFact => comparingFact[attributeData.key] === attributeData.value) !== undefined;
-    } else {
-      return factsWithMatchingKey.find(comparingFact => comparingFact[attributeData.key].toLowerCase() === attributeData.value.toLowerCase()) !== undefined;
+  const matchingPersonsByName = personsWithMatchingNames(parentObject, comparingTo);
+  if (matchingPersonsByName.length > 0) {
+    for (const matchingPersonByName of matchingPersonsByName) {
+      const factsWithMatchingKey = matchingPersonByName.facts?.filter(comparingFact => comparingFact[attributeData.key]);
+      if (attributeData.key === FACT_KEYS.date || attributeData.key === FACT_KEYS.place) {
+        if (factsWithMatchingKey.find(comparingFact => comparingFact[attributeData.key].original === attributeData.value) !== undefined) {
+          return true;
+        }
+      } else if (attributeData.key === FACT_KEYS.type) {
+        if (factsWithMatchingKey.find(comparingFact => comparingFact[attributeData.key] === attributeData.value) !== undefined) {
+          return true;
+        }
+      } else {
+        if (factsWithMatchingKey.find(comparingFact => comparingFact[attributeData.key].toLowerCase() === attributeData.value.toLowerCase()) !== undefined) {
+          return true;
+        }
+      }
     }
   }
   return false;
