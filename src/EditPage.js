@@ -14,6 +14,7 @@ import GraphView from "./GraphView";
 import {FileDrop} from "react-file-drop";
 import {gx1} from './gx-1';
 import {gx2} from './gx-2';
+import {factIsEmpty} from "./persons-diff/EditableFactAttribute";
 
 const RootContainer = styled('div')(({ theme }) => ({
   margin: theme.spacing(1),
@@ -67,6 +68,39 @@ export const rightRecordsData = (leftGx, setLeftGx, rightGx, setRightGx, finalGx
   }
 };
 
+function normalizeGedcomx(gx) {
+  function removeEmptyFactKeysOrFacts(fact) {
+    Object.keys(fact).forEach(key => {
+      if (fact[key] === null || fact[key] === undefined || fact[key].length === 0) {
+        delete fact[key];
+      }
+    });
+  }
+
+  try {
+    gx?.persons?.forEach((person, personIndex) => {
+      person.facts?.forEach((fact, factIndex) => {
+        removeEmptyFactKeysOrFacts(fact);
+        if (factIsEmpty(fact)) {
+          gx.persons[personIndex].facts.splice(factIndex, 1);
+        }
+      });
+    });
+    gx?.relationships?.forEach((relationship, relationshipIndex) => {
+      relationship.facts?.forEach((fact, factIndex) => {
+        removeEmptyFactKeysOrFacts(fact, factIndex, relationshipIndex);
+        if (factIsEmpty(fact)) {
+          gx.relationships[relationshipIndex].facts.splice(factIndex, 1);
+        }
+      });
+    });
+  } catch (error) {
+    console.error("There was a problem normalizing the GedcomX during load.", error);
+  }
+  return gx;
+}
+
+
 export default function EditPage() {
   const cachedData = localStorage.getItem(CACHE_KEY) ? JSON.parse(localStorage.getItem(CACHE_KEY)) : null;
 
@@ -99,8 +133,10 @@ export default function EditPage() {
       if (files.length === 2) {
         let leftGxObject = JSON.parse(await files[0].fileObj.text());
         leftGxObject = leftGxObject.records ? leftGxObject.records[0] : leftGxObject;
+        leftGxObject = normalizeGedcomx(leftGxObject);
         let rightGxObject = JSON.parse(await files[1].fileObj.text());
         rightGxObject = rightGxObject.records ? rightGxObject.records[0] : rightGxObject;
+        rightGxObject = normalizeGedcomx(rightGxObject);
         setLeftFilename(files[0].name);
         setRightFilename(files[1].name);
 

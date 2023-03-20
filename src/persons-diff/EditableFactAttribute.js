@@ -60,6 +60,14 @@ function hasMatchingAttribute(attributeData, fact, parentObject, persons, compar
   return matchingAttributeExists(matchingObjects, attributeData, fact);
 }
 
+export function factIsEmpty(fact) {
+  const factKeys = Object.keys(fact).filter(key => fact[key] !== null);
+  const factHasNoKeys = factKeys.length === 0;
+  const keysToExclude = [FACT_KEYS.primary, FACT_KEYS.id];
+  const factHasNoContent = factKeys.filter(k => !keysToExclude.includes(k)).length === 0;
+  return factHasNoKeys || factHasNoContent;
+}
+
 export default function EditableFactAttribute({attributeData, fact, factIndex, parentObject, parentObjectIndex, comparingTo, updateData}) {
   const recordsData = useContext(RecordsDataContext);
 
@@ -97,14 +105,6 @@ export default function EditableFactAttribute({attributeData, fact, factIndex, p
     setIsEditing(true);
   }
 
-  function factIsEmpty(fact) {
-    const factKeys = Object.keys(fact).filter(key => fact[key] !== null);
-    const factHasNoKeys = factKeys.length === 0;
-    const keysToExclude = [FACT_KEYS.primary, FACT_KEYS.id];
-    const factHasNoContent = factKeys.filter(k => !keysToExclude.includes(k)).length === 0;
-    return factHasNoKeys || factHasNoContent;
-  }
-
   function handleDelete() {
     delete fact[attributeData.key];
     if (factIsEmpty(fact)) {
@@ -122,25 +122,25 @@ export default function EditableFactAttribute({attributeData, fact, factIndex, p
   }
 
   const editableFactAttribute = attributeData.key === 'type' ? (
-    <Grid item sx={{background: backgroundColor, paddingLeft: 2}}>
-      <Grid container direction='row' spacing={1} justifyContent='space-between' alignItems='center'>
-        <Grid item xs={10}>
-          <FormControl fullWidth>
-            <Select value={editFieldValue} onChange={e => setEditFieldValue(e.target.value)} size='small' sx={{margin: 1}}>
-              {Object.keys(FACT_TYPE).map(key => <MenuItem key={`type-${key}`} value={FACT_TYPE[key]}>{key}</MenuItem>)}
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item xs={1.2}>
-          <Button onClick={handleSave}>Save</Button>
-        </Grid>
-        <Grid item xs={0.8}>
-          <IconButton onClick={() => setIsEditing(false)}>
-            <Cancel/>
-          </IconButton>
+      <Grid item sx={{background: backgroundColor, paddingLeft: 2}}>
+        <Grid container direction='row' spacing={1} justifyContent='space-between' alignItems='center'>
+          <Grid item xs={10}>
+            <FormControl fullWidth>
+              <Select value={editFieldValue} onChange={e => setEditFieldValue(e.target.value)} size='small' sx={{margin: 1}}>
+                {Object.keys(FACT_TYPE).map(key => <MenuItem key={`type-${key}`} value={FACT_TYPE[key]}>{key}</MenuItem>)}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={1.2}>
+            <Button onClick={handleSave}>Save</Button>
+          </Grid>
+          <Grid item xs={0.8}>
+            <IconButton onClick={() => setIsEditing(false)}>
+              <Cancel/>
+            </IconButton>
+          </Grid>
         </Grid>
       </Grid>
-    </Grid>
     ) :
     <Grid item sx={{background: backgroundColor, paddingLeft: 2}}>
       <Grid container direction='row' spacing={1} justifyContent='space-between' alignItems='center'>
