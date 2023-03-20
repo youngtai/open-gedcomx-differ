@@ -8,7 +8,7 @@ import {Add} from "@mui/icons-material";
 
 function hasMatchingQualifier(attributeData, parentObject, comparingTo) {
   if (parentObject?.person1 && parentObject?.person2) {
-    // For now, we're not highlighting relationship fact differences
+    //TODO implement this if needed (may not see qualifiers on relationships) - it can be hard to tell what is wrong
     return true;
   }
   const matchingPersonsByName = personsWithMatchingNames(parentObject, comparingTo);
@@ -100,7 +100,7 @@ export default function EditableFactQualifier({attributeData, qualifierIndex, fa
       <Grid container spacing={1} justifyContent='space-between' alignItems='center'>
         <Grid item xs={2}>
           <Select value={newName} onChange={e => setNewName(e.target.value)} size='small'>
-            {Object.keys(FACT_QUALIFIER).map((key, index) => <MenuItem key={`qualifier-choice-${key}`} value={FACT_QUALIFIER[key]}>{key}</MenuItem>)}
+            {Object.keys(FACT_QUALIFIER).map((key) => <MenuItem key={`qualifier-choice-${key}`} value={FACT_QUALIFIER[key]}>{key}</MenuItem>)}
           </Select>
         </Grid>
         <Grid item xs={8}>
