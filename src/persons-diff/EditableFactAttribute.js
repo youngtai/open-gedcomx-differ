@@ -1,13 +1,7 @@
 import {useContext, useEffect, useState} from "react";
 import {Button, FormControl, Grid, IconButton, ListItemText, MenuItem, Select, TextField} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import {
-  DIFF_BACKGROUND_COLOR,
-  FACT_KEYS,
-  FACT_TYPE,
-  KEY_TO_LABEL_MAP,
-  PERSON_FACT_BACKGROUND_COLOR
-} from "../constants";
+import {DIFF_BACKGROUND_COLOR, FACT_KEYS, FACT_TYPE, KEY_TO_LABEL_MAP, PERSON_FACT_BACKGROUND_COLOR} from "../constants";
 import {RecordsDataContext} from "../RecordsContext";
 import {haveSameNames} from "./PersonsDiff";
 import {relationshipPersonsAreEqual} from "../relationships-diff/RelationshipsDiff";
@@ -30,8 +24,8 @@ function matchingAttributeExists(matchingParentObjects, attributeData, fact) {
   if (matchingParentObjects.length > 0) {
     for (const matchingParentObject of matchingParentObjects) {
       const factsWithMatchingKey = matchingParentObject
-          .facts?.filter(comparingFact => fact.type === comparingFact.type)
-          .filter(comparingFact => comparingFact[attributeData.key]);
+        .facts?.filter(comparingFact => fact.type === comparingFact.type)
+        .filter(comparingFact => comparingFact[attributeData.key]);
       if (attributeData.key === FACT_KEYS.date || attributeData.key === FACT_KEYS.place) {
         if (factsWithMatchingKey?.find(comparingFact => comparingFact[attributeData.key].original === attributeData.value) !== undefined) {
           return true;
@@ -61,17 +55,9 @@ function hasMatchingAttribute(attributeData, fact, parentObject, persons, compar
   }
   // Get the matching parent objects (relationships or persons) from the compare side
   const matchingObjects = parentObjectIsARelationship(parentObject) ?
-      relationshipsWithSamePersonsAndType(parentObject, comparingToParentObjects, persons, comparingToPersons) :
-      personsWithMatchingNames(parentObject, comparingToParentObjects);
+    relationshipsWithSamePersonsAndType(parentObject, comparingToParentObjects, persons, comparingToPersons) :
+    personsWithMatchingNames(parentObject, comparingToParentObjects);
   return matchingAttributeExists(matchingObjects, attributeData, fact);
-}
-
-export function factIsEmpty(fact) {
-  const factKeys = Object.keys(fact).filter(key => fact[key] !== null);
-  const factHasNoKeys = factKeys.length === 0;
-  const keysToExclude = [FACT_KEYS.primary, FACT_KEYS.id];
-  const factHasNoContent = factKeys.filter(k => !keysToExclude.includes(k)).length === 0;
-  return factHasNoKeys || factHasNoContent;
 }
 
 export default function EditableFactAttribute({attributeData, fact, factIndex, parentObject, parentObjectIndex, comparingTo, updateData}) {
@@ -109,6 +95,14 @@ export default function EditableFactAttribute({attributeData, fact, factIndex, p
 
   function handleEdit() {
     setIsEditing(true);
+  }
+
+  function factIsEmpty(fact) {
+    const factKeys = Object.keys(fact).filter(key => fact[key] !== null);
+    const factHasNoKeys = factKeys.length === 0;
+    const keysToExclude = [FACT_KEYS.primary, FACT_KEYS.id];
+    const factHasNoContent = factKeys.filter(k => !keysToExclude.includes(k)).length === 0;
+    return factHasNoKeys || factHasNoContent;
   }
 
   function handleDelete() {

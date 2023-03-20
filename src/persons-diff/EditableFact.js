@@ -1,11 +1,25 @@
 import {useContext, useState} from "react";
-import {Box, Button, Grid, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Select, TextField} from "@mui/material";
+import {
+  Box,
+  Button,
+  FormControl,
+  Grid,
+  IconButton,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  MenuItem,
+  Select,
+  TextField
+} from "@mui/material";
 import EditableFactAttribute from "./EditableFactAttribute";
 import PrimaryFactSwitchItem from "./PrimaryFactSwitchItem";
 import {FACT_KEYS, FACT_QUALIFIER, PERSON_FACT_BACKGROUND_COLOR} from "../constants";
 import AddIcon from "@mui/icons-material/Add";
 import {RecordsDataContext} from "../RecordsContext";
 import EditableFactQualifier from "./EditableFactQualifier";
+import {Cancel} from "@mui/icons-material";
 
 function createEditablePersonFactAttribute(attributeData, type, fact, factIndex, parentObject, parentObjectIndex, comparingTo, updateData) {
   return (
@@ -26,7 +40,7 @@ function getMissingAttributes(presentAttributes) {
   return Object.keys(FACT_KEYS).filter(attribute => !presentAttributes.includes(attribute));
 }
 
-export default function EditableFact({fact, factIndex, parentObject, parentObjectIndex, comparingTo, updateData}) {
+export default function EditableFact({fact, factIndex, parentObject, parentObjectIndex, comparingTo, updateData, factTypes}) {
   const recordsData = useContext(RecordsDataContext);
 
   const [isAddingAttribute, setIsAddingAttribute] = useState(false);
@@ -123,6 +137,35 @@ export default function EditableFact({fact, factIndex, parentObject, parentObjec
     setIsAddingAttribute(true);
   }
 
+  function editingComponent(newAttributeKey) {
+    if (newAttributeKey === FACT_KEYS.qualifiers) {
+      return (
+        <Grid container spacing={1} justifyContent='space-between' alignItems='center'>
+          <Grid item xs={3}>
+            <FormControl fullWidth>
+              <Select value={newQualifierName} onChange={e => setNewQualifierName(e.target.value)} size='small'>
+                {Object.keys(FACT_QUALIFIER).map((key, index) => <MenuItem key={`qualifier-choice-${key}`} value={FACT_QUALIFIER[key]}>{key}</MenuItem>)}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={9}>
+            <TextField value={newAttributeValue} onChange={e => setNewAttributeValue(e.target.value)} fullWidth={true} size='small'/>
+          </Grid>
+        </Grid>
+      );
+    } else if (newAttributeKey === FACT_KEYS.type) {
+      return (
+        <FormControl fullWidth>
+          <Select key='type-input' value={newAttributeValue} onChange={e => setNewAttributeValue(e.target.value)} size='small'>
+            {Object.keys(factTypes).map(t => <MenuItem key={`type-input-${t}`} value={factTypes[t]}>{t}</MenuItem>)}
+          </Select>
+        </FormControl>
+      );
+    } else {
+      return <TextField value={newAttributeValue} onChange={e => setNewAttributeValue(e.target.value)} fullWidth={true} size='small'/>;
+    }
+  }
+
   const addAttributeItem = isAddingAttribute ?
     (
       <ListItem key={`fact-${factIndex}-add-attribute`} sx={{background: PERSON_FACT_BACKGROUND_COLOR}}>
@@ -130,30 +173,24 @@ export default function EditableFact({fact, factIndex, parentObject, parentObjec
           <Grid item xs={10}>
             <Grid container direction={'row'} alignItems={'center'} spacing={1}>
               <Grid item xs={3}>
-                <Select value={newAttributeKey} onChange={e => setNewAttributeKey(e.target.value)} size='small'>
-                  {getMissingAttributes(presentAttributes).map((a, idx) => <MenuItem key={`attribute-option-${idx}`} value={a}>{a}</MenuItem>)}
-                </Select>
+                <FormControl fullWidth>
+                  <Select value={newAttributeKey} onChange={e => setNewAttributeKey(e.target.value)} size='small'>
+                    {getMissingAttributes(presentAttributes).map((a, idx) => <MenuItem key={`attribute-option-${idx}`} value={a}>{a}</MenuItem>)}
+                  </Select>
+                </FormControl>
               </Grid>
               <Grid item xs={9}>
-                {newAttributeKey === FACT_KEYS.qualifiers ?
-                <>
-                  <Grid container spacing={1} justifyContent='space-between' alignItems='center'>
-                    <Grid item xs={2}>
-                      <Select value={newQualifierName} onChange={e => setNewQualifierName(e.target.value)} size='small'>
-                        {Object.keys(FACT_QUALIFIER).map((key, index) => <MenuItem key={`qualifier-choice-${key}`} value={FACT_QUALIFIER[key]}>{key}</MenuItem>)}
-                      </Select>
-                    </Grid>
-                    <Grid item xs={9}>
-                      <TextField value={newAttributeValue} onChange={e => setNewAttributeValue(e.target.value)} fullWidth={true} size='small'/>
-                    </Grid>
-                  </Grid>
-                </> :
-                <TextField value={newAttributeValue} onChange={e => setNewAttributeValue(e.target.value)} fullWidth={true} size='small'/>}
+                {editingComponent(newAttributeKey)}
               </Grid>
             </Grid>
           </Grid>
-          <Grid item xs={2}>
+          <Grid item xs={1.2}>
             <Button onClick={handleSaveNewAttribute}>Save</Button>
+          </Grid>
+          <Grid item xs={0.8}>
+            <IconButton onClick={() => setIsAddingAttribute(false)}>
+              <Cancel/>
+            </IconButton>
           </Grid>
         </Grid>
       </ListItem>
