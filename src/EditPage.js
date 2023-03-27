@@ -8,6 +8,7 @@ import {
   Box,
   Button,
   Checkbox,
+  Divider,
   FormControlLabel,
   FormGroup,
   Grid,
@@ -259,7 +260,7 @@ export default function EditPage() {
       <FileDrop className='right-file-drop' onDrop={files => handleRightFileDrop(files, setRightGx)}>
         Drop File Here
       </FileDrop>
-      <Paper>
+      <Paper variant='outlined' sx={{background: '#f8faff', marginBottom: 2}}>
         <Stack direction='row' justifyContent='space-between' alignItems='center' sx={{padding: 2}}>
           <Stack spacing={2}>
             <Typography variant='h6'>Input Options</Typography>
@@ -284,7 +285,8 @@ export default function EditPage() {
           </FormGroup>
         </Stack>
       </Paper>
-      <Stack spacing={1}>
+      <Divider/>
+      <Stack spacing={1} sx={{marginY: 1}}>
         <ItemContainer>
           <Stack direction='row' justifyContent='space-between' alignItems='center'>
             <Typography variant='h6'>{leftFilename}</Typography>
