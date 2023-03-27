@@ -11,9 +11,11 @@ import {
   FormControlLabel,
   FormGroup,
   Grid,
+  Paper,
   Stack,
   Tab,
   Tabs,
+  Tooltip,
   Typography
 } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -250,24 +252,38 @@ export default function EditPage() {
   }
 
   return (
-    <RootContainer sx={{background: 'white', overflowX: 'hidden'}}>
+    <RootContainer sx={{background: 'white', marginX: 2, overflowX: 'hidden'}}>
       <FileDrop className='left-file-drop' onDrop={files => handleLeftFileDrop(files, setLeftGx)}>
         Drop File Here
       </FileDrop>
       <FileDrop className='right-file-drop' onDrop={files => handleRightFileDrop(files, setRightGx)}>
         Drop File Here
       </FileDrop>
-      <Stack direction='row' justifyContent='space-between' alignItems='center'>
-        <FormGroup>
-          <FormControlLabel control={<Checkbox checked={assertions.fullText} onChange={event => setAssertions({...assertions, fullText: event.target.checked})}/>} label='Assert Name fullText (off for ACE/SLS GedcomX comparison)'/>
-          <FormControlLabel control={<Checkbox checked={assertions.nameType} onChange={event => setAssertions({...assertions, nameType: event.target.checked})}/>} label='Assert Name type (off for ACE/SLS GedcomX comparison)'/>
-        </FormGroup>
-        <Stack direction='row' spacing={4} alignItems='center'>
-          <FileUpload onChange={onFileUpload} allowedExtensions={['.json']}/>
-          <Button onClick={handleClearData} variant='contained' color='secondary'>Clear Data</Button>
-          <Button onClick={handleLoadExample} variant='outlined' color='secondary'>Load Example</Button>
+      <Paper>
+        <Stack direction='row' justifyContent='space-between' alignItems='center' sx={{padding: 2}}>
+          <Stack spacing={2}>
+            <Typography variant='h6'>Input Options</Typography>
+            <Stack direction='row' spacing={4} alignItems='center'>
+              <FileUpload onChange={onFileUpload} allowedExtensions={['.json']}/>
+              <Button onClick={handleClearData} variant='contained' color='secondary'>Clear Data</Button>
+            </Stack>
+            <PasteInputButtons
+              setLeftGx={setLeftGx}
+              setRightGx={setRightGx}
+              setLeftGxOriginal={setLeftGxOriginal}
+              setRightGxOriginal={setRightGxOriginal}
+              setLeftFilename={setLeftFilename}
+              setRightFilename={setRightFilename}
+            />
+            <Button onClick={handleLoadExample} variant='outlined' color='secondary'>Load Example</Button>
+          </Stack>
+          <FormGroup>
+            <Typography variant='h6'>Diff Options</Typography>
+            <FormControlLabel control={<Checkbox checked={assertions.fullText} onChange={event => setAssertions({...assertions, fullText: event.target.checked})}/>} label='Assert Name fullText (off for ACE/SLS GedcomX comparison)'/>
+            <FormControlLabel control={<Checkbox checked={assertions.nameType} onChange={event => setAssertions({...assertions, nameType: event.target.checked})}/>} label='Assert Name type (off for ACE/SLS GedcomX comparison)'/>
+          </FormGroup>
         </Stack>
-      </Stack>
+      </Paper>
       <Stack spacing={1}>
         <ItemContainer>
           <Stack direction='row' justifyContent='space-between' alignItems='center'>
@@ -328,8 +344,10 @@ export default function EditPage() {
             </Box>
           </Grid>
           <Grid item xs={4}>
-            <Typography variant='h5'>Final GedcomX</Typography>
-            <GraphView gx={finalGx}/>
+            <Box sx={{marginTop: 10}}>
+              <Typography variant='h5'>Final GedcomX</Typography>
+              <GraphView gx={finalGx}/>
+            </Box>
           </Grid>
           <Grid item xs={4}>
             <Tabs value={rightTab} onChange={(event, newValue) => setRightTab(newValue)}>
@@ -366,5 +384,45 @@ function DiffAccordion({defaultExpanded, title, component}) {
         {component}
       </AccordionDetails>
     </Accordion>
+  );
+}
+
+function PasteInputButtons({setLeftGx, setLeftGxOriginal, setRightGx, setRightGxOriginal, setLeftFilename, setRightFilename}) {
+  function pasteButton(setters, label) {
+    return (
+      <Tooltip title={'Click to paste GedcomX from your clipboard'}>
+        <Button
+          color='secondary'
+          variant='outlined'
+          onClick={async () => {
+            try {
+              const gxText = await navigator.clipboard.readText();
+              if (!(gxText.startsWith("{") || gxText.startsWith("["))) {
+                return Promise.reject("Clipboard data is not valid JSON");
+              }
+              const gx = JSON.parse(gxText);
+              setters.setGx(gx);
+              setters.setGxOriginal(gx);
+              setters.setFilename('Pasted GedcomX');
+            } catch (error) {
+              console.error("Problem reading clipboard data: ", error);
+            }
+          }}
+        >
+          {label}
+        </Button>
+      </Tooltip>
+    );
+
+  }
+
+  const leftSetters = {setGx: setLeftGx, setGxOriginal: setLeftGxOriginal, setFilename: setLeftFilename};
+  const rightSetters = {setGx: setRightGx, setGxOriginal: setRightGxOriginal, setFilename: setRightFilename};
+
+  return (
+    <Stack direction='row' justifyContent='space-between' alignItems='center'>
+      {pasteButton(leftSetters, 'Paste Left GedcomX')}
+      {pasteButton(rightSetters, 'Paste Right GedcomX')}
+    </Stack>
   );
 }
