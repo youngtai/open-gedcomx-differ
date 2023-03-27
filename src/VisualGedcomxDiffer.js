@@ -118,18 +118,26 @@ function normalizeGedcomx(gx) {
   return gx;
 }
 
-export default function VisualGedcomxDiffer() {
+/**
+ *
+ * @param leftData Expecting an object with a JSON GedcomX and a filename. Ex: `{gx: {}, filename: 'filename'}`
+ * @param rightData Expecting an object with a JSON GedcomX and a filename. Ex: `{gx: {}, filename: 'filename'}`
+ * @param hideInputs Set whether input options are displayed or not. Default is `false`
+ * @returns {JSX.Element}
+ * @constructor
+ */
+export default function VisualGedcomxDiffer({leftData = null, rightData = null, hideInputs = false}) {
   const assertionsContext = useContext(AssertionsContext);
   const [assertions, setAssertions] = useState(assertionsContext.assertions);
   const cachedData = localStorage.getItem(CACHE_KEY) ? JSON.parse(localStorage.getItem(CACHE_KEY)) : null;
 
-  const [leftGxOriginal, setLeftGxOriginal] = useState(cachedData ? cachedData.leftGxOriginal : EMPTY_GEDCOMX);
-  const [rightGxOriginal, setRightGxOriginal] = useState(cachedData ? cachedData.rightGxOriginal : EMPTY_GEDCOMX);
-  const [leftGx, setLeftGx] = useState(cachedData ? cachedData.leftGx : EMPTY_GEDCOMX);
-  const [rightGx, setRightGx] = useState(cachedData ? cachedData.rightGx : EMPTY_GEDCOMX);
+  const [leftGxOriginal, setLeftGxOriginal] = useState(leftData && leftData.gx ? leftData.gx : cachedData ? cachedData.leftGxOriginal : EMPTY_GEDCOMX);
+  const [rightGxOriginal, setRightGxOriginal] = useState(rightData && rightData.gx ? rightData.gx : cachedData ? cachedData.rightGxOriginal : EMPTY_GEDCOMX);
+  const [leftGx, setLeftGx] = useState(leftData && leftData.gx ? leftData.gx : cachedData ? cachedData.leftGx : EMPTY_GEDCOMX);
+  const [rightGx, setRightGx] = useState(rightData && rightData.gx ? rightData.gx : cachedData ? cachedData.rightGx : EMPTY_GEDCOMX);
   const [finalGx, setFinalGx] = useState(getGxIntersection(leftGx, rightGx, assertions));
-  const [leftFilename, setLeftFilename] = useState(cachedData ? cachedData.leftFilename : '');
-  const [rightFilename, setRightFilename] = useState(cachedData ? cachedData.rightFilename : '');
+  const [leftFilename, setLeftFilename] = useState(leftData && leftData.filename ? leftData.filename : cachedData ? cachedData.leftFilename : '');
+  const [rightFilename, setRightFilename] = useState(rightData && rightData.filename ? rightData.filename : cachedData ? cachedData.rightFilename : '');
 
   const [leftTab, setLeftTab] = useState(0);
   const [rightTab, setRightTab] = useState(0);
@@ -262,22 +270,24 @@ export default function VisualGedcomxDiffer() {
       </FileDrop>
       <Paper variant='outlined' sx={{background: '#f8faff', marginBottom: 2}}>
         <Stack direction='row' justifyContent='space-between' alignItems='center' sx={{padding: 2}}>
-          <Stack spacing={2}>
-            <Typography variant='h6'>Input Options</Typography>
-            <Stack direction='row' spacing={4} alignItems='center'>
-              <FileUpload onChange={onFileUpload} allowedExtensions={['.json']}/>
-              <Button onClick={handleClearData} variant='contained' color='secondary'>Clear Data</Button>
+          <Box hidden={hideInputs}>
+            <Stack spacing={2}>
+              <Typography variant='h6'>Input Options</Typography>
+              <Stack direction='row' spacing={4} alignItems='center'>
+                <FileUpload onChange={onFileUpload} allowedExtensions={['.json']}/>
+                <Button onClick={handleClearData} variant='contained' color='secondary'>Clear Data</Button>
+              </Stack>
+              <PasteInputButtons
+                setLeftGx={setLeftGx}
+                setRightGx={setRightGx}
+                setLeftGxOriginal={setLeftGxOriginal}
+                setRightGxOriginal={setRightGxOriginal}
+                setLeftFilename={setLeftFilename}
+                setRightFilename={setRightFilename}
+              />
+              <Button onClick={handleLoadExample} variant='outlined' color='secondary'>Load Example</Button>
             </Stack>
-            <PasteInputButtons
-              setLeftGx={setLeftGx}
-              setRightGx={setRightGx}
-              setLeftGxOriginal={setLeftGxOriginal}
-              setRightGxOriginal={setRightGxOriginal}
-              setLeftFilename={setLeftFilename}
-              setRightFilename={setRightFilename}
-            />
-            <Button onClick={handleLoadExample} variant='outlined' color='secondary'>Load Example</Button>
-          </Stack>
+          </Box>
           <FormGroup>
             <Typography variant='h6'>Diff Options</Typography>
             <FormControlLabel control={<Checkbox checked={assertions.fullText} onChange={event => setAssertions({...assertions, fullText: event.target.checked})}/>} label='Assert Name fullText (off for ACE/SLS GedcomX comparison)'/>
