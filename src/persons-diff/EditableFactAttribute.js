@@ -6,9 +6,10 @@ import {RecordsDataContext} from "../RecordsContext";
 import {haveSameNames} from "./PersonsDiff";
 import {relationshipPersonsAreEqual} from "../relationships-diff/RelationshipsDiff";
 import {Cancel} from "@mui/icons-material";
+import {AssertionsContext} from "../AssertionsContext";
 
-export function personsWithMatchingNames(person, comparingTo) {
-  return comparingTo.filter(p => haveSameNames(p, person));
+export function personsWithMatchingNames(person, comparingTo, assertions) {
+  return comparingTo.filter(p => haveSameNames(p, person, assertions));
 }
 
 function relationshipsWithSamePersonsAndType(relationship, comparingToRels, persons, comparingToPersons) {
@@ -44,7 +45,7 @@ function matchingAttributeExists(matchingParentObjects, attributeData, fact) {
   return false;
 }
 
-function hasMatchingAttribute(attributeData, fact, parentObject, persons, comparingToParentObjects, comparingToPersons) {
+function hasMatchingAttribute(attributeData, fact, parentObject, persons, comparingToParentObjects, comparingToPersons, assertions) {
   function parentObjectIsARelationship(parentObject) {
     return parentObject?.person1 && parentObject?.person2;
   }
@@ -56,7 +57,7 @@ function hasMatchingAttribute(attributeData, fact, parentObject, persons, compar
   // Get the matching parent objects (relationships or persons) from the compare side
   const matchingObjects = parentObjectIsARelationship(parentObject) ?
     relationshipsWithSamePersonsAndType(parentObject, comparingToParentObjects, persons, comparingToPersons) :
-    personsWithMatchingNames(parentObject, comparingToParentObjects);
+    personsWithMatchingNames(parentObject, comparingToParentObjects, assertions);
   return matchingAttributeExists(matchingObjects, attributeData, fact);
 }
 
@@ -70,18 +71,19 @@ export function factIsEmpty(fact) {
 
 export default function EditableFactAttribute({attributeData, fact, factIndex, parentObject, parentObjectIndex, comparingTo, updateData}) {
   const recordsData = useContext(RecordsDataContext);
+  const assertions = useContext(AssertionsContext).assertions;
 
   const [isEditing, setIsEditing] = useState(false);
   const [editFieldValue, setEditFieldValue] = useState(attributeData ? attributeData.value : '');
-  const [hasMatch, setHasMatch] = useState(hasMatchingAttribute(attributeData, fact, parentObject, recordsData.gx.persons, comparingTo, recordsData.comparingToGx.persons));
+  const [hasMatch, setHasMatch] = useState(hasMatchingAttribute(attributeData, fact, parentObject, recordsData.gx.persons, comparingTo, recordsData.comparingToGx.persons, assertions));
 
   const backgroundColor = hasMatch ? PERSON_FACT_BACKGROUND_COLOR : DIFF_BACKGROUND_COLOR;
   const textColor = hasMatch ? 'black' : 'red';
 
   useEffect(() => {
-    setHasMatch(hasMatchingAttribute(attributeData, fact, parentObject, recordsData.gx.persons, comparingTo, recordsData.comparingToGx.persons));
+    setHasMatch(hasMatchingAttribute(attributeData, fact, parentObject, recordsData.gx.persons, comparingTo, recordsData.comparingToGx.persons, assertions));
     setEditFieldValue(attributeData.value);
-  }, [attributeData, parentObject, comparingTo, fact, recordsData.gx.persons, recordsData.comparingToGx.persons]);
+  }, [attributeData, parentObject, comparingTo, fact, recordsData.gx.persons, recordsData.comparingToGx.persons, assertions]);
 
   function handleSave() {
     setIsEditing(false);

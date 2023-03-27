@@ -16,6 +16,7 @@ import {KeyboardArrowDown, KeyboardArrowUp} from "@mui/icons-material";
 import EditablePersonName from "./EditablePersonName";
 import {generateLocalId} from "../Utils";
 import PersonNameEditDialog from "./PersonNameEditDialog";
+import {AssertionsContext} from "../AssertionsContext";
 
 export function updateRecordsData(recordsData) {
   const persons = recordsData.gx.persons;
@@ -68,14 +69,15 @@ function getPrincipalState(person) {
   return 'is principal';
 }
 
-export function updatePersonsData(person, personIndex, recordsData) {
+export function updatePersonsData(person, personIndex, recordsData, assertions) {
   recordsData.gx.persons.splice(personIndex, 1, person);
   updateRecordsData(recordsData);
-  updateRelationshipsData(recordsData);
+  updateRelationshipsData(recordsData, assertions);
 }
 
 export default function EditablePerson({person, personIndex}) {
   const recordsData = useContext(RecordsDataContext);
+  const assertions = useContext(AssertionsContext).assertions;
   const persons = recordsData.gx.persons;
 
   const [open, setOpen] = useState(false);
@@ -114,12 +116,12 @@ export default function EditablePerson({person, personIndex}) {
     } else if (person.gender.type === GENDER.Unknown) {
       person.gender.type = GENDER.Male;
     }
-    updatePersonsData(person, personIndex, recordsData);
+    updatePersonsData(person, personIndex, recordsData, assertions);
   }
 
   function handleSetPrincipal() {
     person.principal = person.principal === undefined || person.principal === false;
-    updatePersonsData(person, personIndex, recordsData);
+    updatePersonsData(person, personIndex, recordsData, assertions);
   }
 
   function handleAddName() {

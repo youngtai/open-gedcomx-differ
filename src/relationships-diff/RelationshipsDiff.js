@@ -8,16 +8,16 @@ export function getPersonById(id, persons) {
   return persons?.find(person => person.id === id);
 }
 
-export function relationshipPersonsAreEqual(sideARelPerson, sideBRelPerson, sideAPersons, sideBPersons) {
+export function relationshipPersonsAreEqual(sideARelPerson, sideBRelPerson, sideAPersons, sideBPersons, assertions) {
   const personA = getPersonById(sideBRelPerson.resourceId, sideBPersons);
   const personB = getPersonById(sideARelPerson.resourceId, sideAPersons);
-  return personsAreEqual(personA, personB);
+  return personsAreEqual(personA, personB, assertions);
 }
 
-function relationshipsAreEqual(sideARel, sideBRel, sideAPersons, sideBPersons) {
+function relationshipsAreEqual(sideARel, sideBRel, sideAPersons, sideBPersons, assertions) {
   const typeIsEqual = sideBRel.type === sideARel.type;
-  const person1IsEqual = relationshipPersonsAreEqual(sideARel.person1, sideBRel.person1, sideAPersons, sideBPersons);
-  const person2IsEqual = relationshipPersonsAreEqual(sideARel.person2, sideBRel.person2, sideAPersons, sideBPersons);
+  const person1IsEqual = relationshipPersonsAreEqual(sideARel.person1, sideBRel.person1, sideAPersons, sideBPersons, assertions);
+  const person2IsEqual = relationshipPersonsAreEqual(sideARel.person2, sideBRel.person2, sideAPersons, sideBPersons, assertions);
   const factsAreEqual = haveSameFacts(sideARel?.facts, sideBRel?.facts);
   return typeIsEqual && person1IsEqual && person2IsEqual && factsAreEqual;
 }
@@ -28,15 +28,16 @@ function relationshipsAreEqual(sideARel, sideBRel, sideAPersons, sideBPersons) {
  * @param sideBRel the relationship we check presence of
  * @param sideAPersons persons from the Gedcomx sourcing the array of relationships
  * @param sideBPersons persons from the Gedcomx sourcing the relationship we're checking presence of
+ * @param assertions optionally turn on/off comparing certain elements (depending on the input Gx and needs)
  * @returns {boolean} whether a relationship is present in a relationship array
  */
-export function sideIncludesRel(sideARels, sideBRel, sideAPersons, sideBPersons) {
-  return sideARels.find(sideARel => relationshipsAreEqual(sideARel, sideBRel, sideAPersons, sideBPersons)) !== undefined;
+export function sideIncludesRel(sideARels, sideBRel, sideAPersons, sideBPersons, assertions) {
+  return sideARels.find(sideARel => relationshipsAreEqual(sideARel, sideBRel, sideAPersons, sideBPersons, assertions)) !== undefined;
 }
 
 // Return intersection of left and right relationships
-export function getRelationshipsIntersection(leftRels, rightRels, leftPersons, rightPersons) {
-  return leftRels?.filter(rel => sideIncludesRel(rightRels, rel, leftPersons, rightPersons));
+export function getRelationshipsIntersection(leftRels, rightRels, leftPersons, rightPersons, assertions) {
+  return leftRels?.filter(rel => sideIncludesRel(rightRels, rel, leftPersons, rightPersons, assertions));
 }
 
 // Return the complement of the intersection of {side} and center relationships (Ones without matches)
@@ -51,8 +52,8 @@ export function fullTextName(person) {
   return person.names[0]?.nameForms[0]?.fullText;
 }
 
-export function updateRelationshipsData(recordsData) {
-  recordsData.finalGx.relationships = getRelationshipsIntersection(recordsData.gx.relationships, recordsData.comparingToGx.relationships, recordsData.gx.persons, recordsData.comparingToGx.persons);
+export function updateRelationshipsData(recordsData, assertions) {
+  recordsData.finalGx.relationships = getRelationshipsIntersection(recordsData.gx.relationships, recordsData.comparingToGx.relationships, recordsData.gx.persons, recordsData.comparingToGx.persons, assertions);
   recordsData.setFinalGx(structuredClone(recordsData.finalGx));
 
   recordsData.setGx(structuredClone(recordsData.gx));

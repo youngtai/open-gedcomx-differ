@@ -6,9 +6,10 @@ import {DIFF_BACKGROUND_COLOR, NAME_PART_TYPE} from "../constants";
 import {updatePersonsData, updateRecordsData} from "./EditablePerson";
 import {personsAreEqual} from "./PersonsDiff";
 import {RecordsDataContext} from "../RecordsContext";
+import {AssertionsContext} from "../AssertionsContext";
 
-function hasMatchingPerson(person, comparingTo) {
-  return comparingTo.find(p => personsAreEqual(person, p)) !== undefined;
+function hasMatchingPerson(person, comparingTo, assertions) {
+  return comparingTo.find(p => personsAreEqual(person, p, assertions)) !== undefined;
 }
 
 function getNamePartByType(parts, type) {
@@ -58,19 +59,20 @@ function ColoredNameParts({nameParts, hasMatch}) {
 
 export default function EditablePersonName({person, personIndex, name, nameIndex}) {
   const recordsData = useContext(RecordsDataContext);
+  const assertions = useContext(AssertionsContext).assertions;
   const persons = recordsData.gx.persons;
   const comparingTo = recordsData.comparingToGx.persons;
 
   const parts = name?.nameForms[0]?.parts;
   const nameParts = getNamePartsObject(parts);
   const [isEditingPerson, setIsEditingPerson] = useState(false);
-  const [hasMatch, setHasMatch] = useState(hasMatchingPerson(person, comparingTo));
+  const [hasMatch, setHasMatch] = useState(hasMatchingPerson(person, comparingTo, assertions));
 
   const backgroundColor = hasMatch ? 'white' : DIFF_BACKGROUND_COLOR;
 
   useEffect(() => {
-    setHasMatch(hasMatchingPerson(person, comparingTo));
-  }, [person, comparingTo]);
+    setHasMatch(hasMatchingPerson(person, comparingTo, assertions));
+  }, [person, comparingTo, assertions]);
 
   function handleDeletePerson() {
     person.names.splice(nameIndex, 1);

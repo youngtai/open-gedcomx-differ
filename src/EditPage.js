@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import {styled} from "@mui/material/styles";
 import FileUpload from "./FileUpload";
 import {
@@ -7,6 +7,9 @@ import {
   AccordionSummary,
   Box,
   Button,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
   Grid,
   Stack,
   Tab,
@@ -26,6 +29,7 @@ import {FileDrop} from "react-file-drop";
 import {gx1} from './gx-1';
 import {gx2} from './gx-2';
 import {factIsEmpty} from "./persons-diff/EditableFactAttribute";
+import {AssertionsContext} from "./AssertionsContext";
 
 const RootContainer = styled('div')(({ theme }) => ({
   margin: theme.spacing(1),
@@ -37,9 +41,9 @@ const ItemContainer = styled('div')(({ theme }) => ({
 
 const CACHE_KEY = 'gedcomx-differ-data';
 
-export function getGxIntersection(leftGx, rightGx) {
+export function getGxIntersection(leftGx, rightGx, assertions) {
   const personsIntersection = getPersonsIntersection(leftGx.persons, rightGx.persons);
-  const relationshipsIntersection = getRelationshipsIntersection(leftGx.relationships, rightGx.relationships, leftGx.persons, rightGx.persons);
+  const relationshipsIntersection = getRelationshipsIntersection(leftGx.relationships, rightGx.relationships, leftGx.persons, rightGx.persons, assertions);
   const recordDataIntersection = getRecordDataIntersection(leftGx.sourceDescriptions, rightGx.sourceDescriptions);
   const fieldsIntersection = getFieldsIntersection(leftGx.fields, rightGx.fields);
   const documentsIntersection = getDocumentsIntersection(leftGx.documents, rightGx.documents);
@@ -112,13 +116,15 @@ function normalizeGedcomx(gx) {
 }
 
 export default function EditPage() {
+  const assertionsContext = useContext(AssertionsContext);
+  const [assertions, setAssertions] = useState(assertionsContext.assertions);
   const cachedData = localStorage.getItem(CACHE_KEY) ? JSON.parse(localStorage.getItem(CACHE_KEY)) : null;
 
   const [leftGxOriginal, setLeftGxOriginal] = useState(cachedData ? cachedData.leftGxOriginal : EMPTY_GEDCOMX);
   const [rightGxOriginal, setRightGxOriginal] = useState(cachedData ? cachedData.rightGxOriginal : EMPTY_GEDCOMX);
   const [leftGx, setLeftGx] = useState(cachedData ? cachedData.leftGx : EMPTY_GEDCOMX);
   const [rightGx, setRightGx] = useState(cachedData ? cachedData.rightGx : EMPTY_GEDCOMX);
-  const [finalGx, setFinalGx] = useState(getGxIntersection(leftGx, rightGx));
+  const [finalGx, setFinalGx] = useState(getGxIntersection(leftGx, rightGx, assertions));
   const [leftFilename, setLeftFilename] = useState(cachedData ? cachedData.leftFilename : '');
   const [rightFilename, setRightFilename] = useState(cachedData ? cachedData.rightFilename : '');
 
@@ -154,7 +160,7 @@ export default function EditPage() {
         setRightGx(rightGxObject);
         setLeftGxOriginal(structuredClone(leftGxObject));
         setRightGxOriginal(structuredClone(rightGxObject));
-        setFinalGx(getGxIntersection(leftGxObject, rightGxObject));
+        setFinalGx(getGxIntersection(leftGxObject, rightGxObject, assertions));
       }
       else if (files.length === 1) {
         if (leftGx === EMPTY_GEDCOMX) {
@@ -170,7 +176,7 @@ export default function EditPage() {
           setRightFilename(files[0].name);
           setRightGx(rightGxObject);
           setRightGxOriginal(structuredClone(rightGxObject));
-          setFinalGx(getGxIntersection(leftGx, rightGxObject));
+          setFinalGx(getGxIntersection(leftGx, rightGxObject, assertions));
         }
       }
     }
@@ -189,7 +195,7 @@ export default function EditPage() {
       setRightFilename(files[0].name);
     }
     if (leftGx !== EMPTY_GEDCOMX && rightGx !== EMPTY_GEDCOMX) {
-      setFinalGx(getGxIntersection(leftGx, droppedGxObject));
+      setFinalGx(getGxIntersection(leftGx, droppedGxObject, assertions));
     }
   }
 
@@ -206,7 +212,7 @@ export default function EditPage() {
       setLeftFilename(files[0].name);
     }
     if (leftGx !== EMPTY_GEDCOMX && rightGx !== EMPTY_GEDCOMX) {
-      setFinalGx(getGxIntersection(droppedGxObject, rightGx));
+      setFinalGx(getGxIntersection(droppedGxObject, rightGx, assertions));
     }
   }
 
@@ -229,7 +235,7 @@ export default function EditPage() {
     setRightGx(EMPTY_GEDCOMX);
     setLeftGxOriginal(EMPTY_GEDCOMX);
     setRightGxOriginal(EMPTY_GEDCOMX);
-    setFinalGx(getGxIntersection(EMPTY_GEDCOMX, EMPTY_GEDCOMX));
+    setFinalGx(getGxIntersection(EMPTY_GEDCOMX, EMPTY_GEDCOMX, assertions));
     setLeftFilename('');
     setRightFilename('');
   }
@@ -244,7 +250,7 @@ export default function EditPage() {
   }
 
   return (
-    <RootContainer sx={{background: 'white'}}>
+    <RootContainer sx={{background: 'white', overflowX: 'hidden'}}>
       <FileDrop className='left-file-drop' onDrop={files => handleLeftFileDrop(files, setLeftGx)}>
         Drop File Here
       </FileDrop>
@@ -252,7 +258,11 @@ export default function EditPage() {
         Drop File Here
       </FileDrop>
       <Stack direction='row' justifyContent='space-between' alignItems='center'>
-        <Stack direction='row' alignItems='center' spacing={4}>
+        <FormGroup>
+          <FormControlLabel control={<Checkbox checked={assertions.fullText} onChange={event => setAssertions({...assertions, fullText: event.target.checked})}/>} label='Assert Name fullText (off for ACE/SLS GedcomX comparison)'/>
+          <FormControlLabel control={<Checkbox checked={assertions.nameType} onChange={event => setAssertions({...assertions, nameType: event.target.checked})}/>} label='Assert Name type (off for ACE/SLS GedcomX comparison)'/>
+        </FormGroup>
+        <Stack direction='row' spacing={4} alignItems='center'>
           <FileUpload onChange={onFileUpload} allowedExtensions={['.json']}/>
           <Button onClick={handleClearData} variant='contained' color='secondary'>Clear Data</Button>
           <Button onClick={handleLoadExample} variant='outlined' color='secondary'>Load Example</Button>
@@ -265,41 +275,43 @@ export default function EditPage() {
             <Typography variant='h6'>{rightFilename}</Typography>
           </Stack>
         </ItemContainer>
-        <ItemContainer>
-          <DiffAccordion
-            defaultExpanded={true}
-            title={'Record Data'}
-            component={<SourceDescriptionsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>}
-          />
-        </ItemContainer>
-        <ItemContainer>
-          <DiffAccordion
-            defaultExpanded={true}
-            title='Record Fields'
-            component={<FieldsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>}
-          />
-        </ItemContainer>
-        <ItemContainer>
-          <DiffAccordion
-            defaultExpanded={true}
-            title='Persons'
-            component={<PersonsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>}
-          />
-        </ItemContainer>
-        <ItemContainer>
-          <DiffAccordion
-            defaultExpanded={true}
-            title='Relationships'
-            component={<RelationshipsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>}
-          />
-        </ItemContainer>
-        <ItemContainer>
-          <DiffAccordion
-            defaultExpanded={true}
-            title='Documents'
-            component={<DocumentsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>}
-          />
-        </ItemContainer>
+        <AssertionsContext.Provider value={{assertions: assertions, setAssertions: setAssertions}}>
+          <ItemContainer>
+            <DiffAccordion
+              defaultExpanded={true}
+              title={'Record Data'}
+              component={<SourceDescriptionsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>}
+            />
+          </ItemContainer>
+          <ItemContainer>
+            <DiffAccordion
+              defaultExpanded={true}
+              title='Record Fields'
+              component={<FieldsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>}
+            />
+          </ItemContainer>
+          <ItemContainer>
+            <DiffAccordion
+              defaultExpanded={true}
+              title='Persons'
+              component={<PersonsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>}
+            />
+          </ItemContainer>
+          <ItemContainer>
+            <DiffAccordion
+              defaultExpanded={true}
+              title='Relationships'
+              component={<RelationshipsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>}
+            />
+          </ItemContainer>
+          <ItemContainer>
+            <DiffAccordion
+              defaultExpanded={true}
+              title='Documents'
+              component={<DocumentsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>}
+            />
+          </ItemContainer>
+        </AssertionsContext.Provider>
         <Grid container spacing={1}>
           <Grid item xs={4}>
             <Tabs value={leftTab} onChange={(event, newValue) => setLeftTab(newValue)}>

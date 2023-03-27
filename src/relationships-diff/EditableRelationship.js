@@ -9,40 +9,36 @@ import EditableFact from "../persons-diff/EditableFact";
 import AddIcon from "@mui/icons-material/Add";
 import AddFactOrFieldDialog from "../persons-diff/AddFactOrFieldDialog";
 import {updateRecordsData} from "../persons-diff/EditablePerson";
+import {AssertionsContext} from "../AssertionsContext";
 
-function factUpdateHandler(rel, relIndex, recordsData) {
-  recordsData.gx.relationships.splice(relIndex, 1, rel);
-  updateRecordsData(recordsData);
-  updateRelationshipsData(recordsData);
-}
-
-function hasMatchingRelationship(comparingToRels, rel, comparingToPersons, persons) {
-  return sideIncludesRel(comparingToRels, rel, comparingToPersons, persons)
+function hasMatchingRelationship(comparingToRels, rel, comparingToPersons, persons, assertions) {
+  return sideIncludesRel(comparingToRels, rel, comparingToPersons, persons, assertions)
 }
 
 export function EditableRelationship({rel, relIndex, persons}) {
   const recordsData = useContext(RecordsDataContext);
+  const assertions = useContext(AssertionsContext).assertions;
   const rels = recordsData.gx.relationships;
   const comparingToRels = recordsData.comparingToGx.relationships;
   const comparingToPersons = recordsData.comparingToGx.persons;
 
   const [isEditing, setIsEditing] = useState(false);
   const [addFactOrField, setAddFactOrField] = useState(false);
-  const [hasMatch, setHasMatch] = useState(hasMatchingRelationship(comparingToRels, rel, comparingToPersons, persons));
+  const [hasMatch, setHasMatch] = useState(hasMatchingRelationship(comparingToRels, rel, comparingToPersons, persons, assertions));
 
   const backgroundColor = hasMatch ? 'white' : DIFF_BACKGROUND_COLOR;
   const textColor = hasMatch ? 'black' : 'red';
 
   useEffect(() => {
-    setHasMatch(hasMatchingRelationship(comparingToRels, rel, comparingToPersons, persons));
-  }, [comparingToRels, rel, comparingToPersons, persons]);
+    setHasMatch(hasMatchingRelationship(comparingToRels, rel, comparingToPersons, persons, assertions));
+  }, [comparingToRels, rel, comparingToPersons, persons, assertions]);
 
   function handleSwitchPerson() {
     const person1Clone = structuredClone(rel.person1);
     rel.person1 = structuredClone(rel.person2);
     rel.person2 = person1Clone;
     rels.splice(relIndex, 1, rel);
-    updateRelationshipsData(recordsData);
+    updateRelationshipsData(recordsData, assertions);
   }
 
   function handleEdit() {
@@ -51,11 +47,17 @@ export function EditableRelationship({rel, relIndex, persons}) {
 
   function handleDelete() {
     rels.splice(relIndex, 1);
-    updateRelationshipsData(recordsData);
+    updateRelationshipsData(recordsData, assertions);
   }
 
   function handleAddFactOrField() {
     setAddFactOrField(true);
+  }
+
+  function factUpdateHandler(rel, relIndex, recordsData) {
+    recordsData.gx.relationships.splice(relIndex, 1, rel);
+    updateRecordsData(recordsData);
+    updateRelationshipsData(recordsData, assertions);
   }
 
   return (

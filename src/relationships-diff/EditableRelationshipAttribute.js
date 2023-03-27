@@ -2,16 +2,18 @@ import {useContext, useState} from "react";
 import {RecordsDataContext} from "../RecordsContext";
 import {updateRelationshipsData} from "./RelationshipsDiff";
 import {Button, Grid, ListItemText, TextField} from "@mui/material";
+import {AssertionsContext} from "../AssertionsContext";
 
 export default function EditableRelationshipAttribute({rel, relIndex, isEditing, setIsEditing}) {
   const recordsData = useContext(RecordsDataContext);
+  const assertions = useContext(AssertionsContext).assertions;
   const [editValue, setEditValue] = useState(rel?.type ? rel.type : '');
 
   function handleSave() {
     setIsEditing(false);
     rel.type = editValue;
     recordsData.gx.relationships[relIndex] = rel;
-    updateRelationshipsData(recordsData);
+    updateRelationshipsData(recordsData, assertions);
   }
 
   function editItem() {

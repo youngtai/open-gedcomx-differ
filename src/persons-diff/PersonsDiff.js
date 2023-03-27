@@ -109,22 +109,22 @@ function haveSameNameParts(partsA, partsB) {
   }).every(result => result);
 }
 
-function namesAreEqual(nameA, nameB) {
+function namesAreEqual(nameA, nameB, assertions) {
   // We'll assume persons have a single nameForm for now
   const personANameForm = nameA?.nameForms[0];
   const personBNameForm = nameB?.nameForms[0];
-  const fullTextEqual = personANameForm?.fullText === personBNameForm?.fullText;
+  const fullTextEqual = assertions?.fullText ? personANameForm?.fullText === personBNameForm?.fullText : true;
   const partsEqual = haveSameNameParts(personANameForm?.parts, personBNameForm?.parts);
-  const typesEqual = nameA?.type === nameB?.type;
+  const typesEqual = assertions?.nameType ? nameA?.type === nameB?.type : true;
 
   return fullTextEqual && partsEqual && typesEqual;
 }
 
-function nameIsInNames(name, names) {
-  return names?.find(n => namesAreEqual(name, n)) !== undefined;
+function nameIsInNames(name, names, assertions) {
+  return names?.find(n => namesAreEqual(name, n, assertions)) !== undefined;
 }
 
-export function haveSameNames(personA, personB) {
+export function haveSameNames(personA, personB, assertions) {
   const namesA = personA?.names;
   const namesB = personB?.names;
   if (namesA?.length !== namesB?.length) {
@@ -133,14 +133,14 @@ export function haveSameNames(personA, personB) {
   if (!namesA && !namesB) {
     return true;
   }
-  return namesA?.every(nameA => nameIsInNames(nameA, namesB));
+  return namesA?.every(nameA => nameIsInNames(nameA, namesB, assertions));
 }
 
-export function personsAreEqual(personA, personB) {
+export function personsAreEqual(personA, personB, assertions) {
   if (personA?.names?.length !== personB?.names?.length) {
     return false;
   }
-  const namesAreEqual = haveSameNames(personA, personB);
+  const namesAreEqual = haveSameNames(personA, personB, assertions);
   const sameFacts = haveSameFacts(personA?.facts, personB?.facts);
   const sameFields = haveSamePersonFields(personA?.fields, personB?.fields);
   const samePrincipalStatus = personA?.principal === personB?.principal;
@@ -149,8 +149,8 @@ export function personsAreEqual(personA, personB) {
   return namesAreEqual && sameFacts && sameFields && samePrincipalStatus && sameGender;
 }
 
-export function getPersonsIntersection(leftPersons, rightPersons) {
-  return leftPersons.filter(lp => rightPersons.find(rp => personsAreEqual(lp, rp)) !== undefined);
+export function getPersonsIntersection(leftPersons, rightPersons, assertions) {
+  return leftPersons.filter(lp => rightPersons.find(rp => personsAreEqual(lp, rp, assertions)) !== undefined);
 }
 
 export default function PersonsDiff({leftGx, setLeftGx, rightGx, setRightGx, finalGx, setFinalGx}) {

@@ -5,9 +5,11 @@ import {fullTextName, updateRelationshipsData} from "./RelationshipsDiff";
 import {RELATIONSHIP} from "../constants";
 import {generateLocalId} from "../Utils";
 import {PaperComponent, RootContainer} from "../Styled";
+import {AssertionsContext} from "../AssertionsContext";
 
 export default function AddRelationshipDialog({open, setOpen}) {
   const recordsData = useContext(RecordsDataContext);
+  const assertions = useContext(AssertionsContext).assertions;
   const persons = recordsData.gx.persons;
   const personMenuItems = persons.map((person, idx) => <MenuItem key={`person-item-${idx}`} value={person}>{fullTextName(person)}</MenuItem>);
 
@@ -33,7 +35,7 @@ export default function AddRelationshipDialog({open, setOpen}) {
       }
     };
     recordsData.gx.relationships.push(newRelationship);
-    updateRelationshipsData(recordsData);
+    updateRelationshipsData(recordsData, assertions);
     setPerson1('');
     setPerson2('');
   }
