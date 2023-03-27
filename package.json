@@ -1,6 +1,6 @@
 {
   "name": "gedcomx-differ",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "React component for visually diffing two GedcomX JSON and editing them to alignment",
   "main": "VisualGedcomxDiffer.js",
   "dependencies": {
@@ -50,7 +50,7 @@
   "author": "Young Tai Ahn",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/fs-eng/ace-gedcomx-differ/issues"
+    "url": "https://github.com/youngtai/open-gedcomx-differ/issues"
   },
-  "homepage": "https://youngtai.github.io/open-gedcomx-differ"
+  "homepage": "https://github.com/youngtai/open-gedcomx-differ"
 }
