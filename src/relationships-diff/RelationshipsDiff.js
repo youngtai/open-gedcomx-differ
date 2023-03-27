@@ -36,7 +36,7 @@ export function sideIncludesRel(sideARels, sideBRel, sideAPersons, sideBPersons)
 
 // Return intersection of left and right relationships
 export function getRelationshipsIntersection(leftRels, rightRels, leftPersons, rightPersons) {
-  return leftRels.filter(rel => sideIncludesRel(rightRels, rel, leftPersons, rightPersons));
+  return leftRels?.filter(rel => sideIncludesRel(rightRels, rel, leftPersons, rightPersons));
 }
 
 // Return the complement of the intersection of {side} and center relationships (Ones without matches)

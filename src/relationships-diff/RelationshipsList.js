@@ -18,7 +18,7 @@ export default function RelationshipsList({rels, persons}) {
       </Button>
       <AddRelationshipDialog open={open} setOpen={setOpen}/>
       <List dense component='div'>
-        {rels.map((rel, relIndex) => <EditableRelationship key={`rel-${relIndex}`} rel={rel} relIndex={relIndex} persons={persons}/>)}
+        {rels?.map((rel, relIndex) => <EditableRelationship key={`rel-${relIndex}`} rel={rel} relIndex={relIndex} persons={persons}/>)}
       </List>
     </>
   );
