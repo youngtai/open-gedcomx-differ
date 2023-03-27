@@ -266,54 +266,39 @@ export default function EditPage() {
           </Stack>
         </ItemContainer>
         <ItemContainer>
-          <Accordion variant='outlined' defaultExpanded={true}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant={'h5'}>Record Data</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <SourceDescriptionsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>
-            </AccordionDetails>
-          </Accordion>
+          <DiffAccordion
+            defaultExpanded={true}
+            title={'Record Data'}
+            component={<SourceDescriptionsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>}
+          />
         </ItemContainer>
         <ItemContainer>
-          <Accordion variant='outlined' defaultExpanded={true}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant={'h5'}>Record Fields</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <FieldsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>
-            </AccordionDetails>
-          </Accordion>
+          <DiffAccordion
+            defaultExpanded={true}
+            title='Record Fields'
+            component={<FieldsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>}
+          />
         </ItemContainer>
         <ItemContainer>
-          <Accordion variant='outlined' defaultExpanded={true}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant='h5'>Persons</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <PersonsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>
-            </AccordionDetails>
-          </Accordion>
+          <DiffAccordion
+            defaultExpanded={true}
+            title='Persons'
+            component={<PersonsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>}
+          />
         </ItemContainer>
         <ItemContainer>
-          <Accordion variant='outlined' defaultExpanded={true}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant={'h5'}>Relationships</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <RelationshipsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>
-            </AccordionDetails>
-          </Accordion>
+          <DiffAccordion
+            defaultExpanded={true}
+            title='Relationships'
+            component={<RelationshipsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>}
+          />
         </ItemContainer>
         <ItemContainer>
-          <Accordion variant='outlined' defaultExpanded={true}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant={'h5'}>Documents</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <DocumentsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>
-            </AccordionDetails>
-          </Accordion>
+          <DiffAccordion
+            defaultExpanded={true}
+            title='Documents'
+            component={<DocumentsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>}
+          />
         </ItemContainer>
         <Grid container spacing={1}>
           <Grid item xs={4}>
@@ -357,4 +342,17 @@ export default function EditPage() {
       </Stack>
     </RootContainer>
   )
+}
+
+function DiffAccordion({defaultExpanded, title, component}) {
+  return (
+    <Accordion variant='outlined' defaultExpanded={defaultExpanded}>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <Typography variant={'h5'}>{title}</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        {component}
+      </AccordionDetails>
+    </Accordion>
+  );
 }
