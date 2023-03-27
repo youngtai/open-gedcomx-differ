@@ -32,7 +32,7 @@ function relationshipsAreEqual(sideARel, sideBRel, sideAPersons, sideBPersons, a
  * @returns {boolean} whether a relationship is present in a relationship array
  */
 export function sideIncludesRel(sideARels, sideBRel, sideAPersons, sideBPersons, assertions) {
-  return sideARels.find(sideARel => relationshipsAreEqual(sideARel, sideBRel, sideAPersons, sideBPersons, assertions)) !== undefined;
+  return sideARels?.find(sideARel => relationshipsAreEqual(sideARel, sideBRel, sideAPersons, sideBPersons, assertions)) !== undefined;
 }
 
 // Return intersection of left and right relationships
