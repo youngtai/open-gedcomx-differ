@@ -1,7 +1,18 @@
 import {useEffect, useState} from 'react';
 import {styled} from "@mui/material/styles";
 import FileUpload from "./FileUpload";
-import {Accordion, AccordionDetails, AccordionSummary, Box, Button, Grid, Stack, Tab, Tabs, Typography} from "@mui/material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Button,
+  Grid,
+  Stack,
+  Tab,
+  Tabs,
+  Typography
+} from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import './MainPage.css';
 import PersonsDiff, {getPersonsIntersection} from "./persons-diff/PersonsDiff";
@@ -99,7 +110,6 @@ function normalizeGedcomx(gx) {
   }
   return gx;
 }
-
 
 export default function EditPage() {
   const cachedData = localStorage.getItem(CACHE_KEY) ? JSON.parse(localStorage.getItem(CACHE_KEY)) : null;
@@ -241,128 +251,110 @@ export default function EditPage() {
       <FileDrop className='right-file-drop' onDrop={files => handleRightFileDrop(files, setRightGx)}>
         Drop File Here
       </FileDrop>
-      <Grid container direction='column' spacing={1}>
-        <Grid item>
-          <ItemContainer>
-            <Stack direction='row' justifyContent='space-between' alignItems='center'>
-              <Typography variant='h6'>{leftFilename}</Typography>
-              <FileUpload onChange={onFileUpload} allowedExtensions={['.json']}/>
-              <Button onClick={handleClearData} variant='contained' color='secondary'>Clear Data</Button>
-              <Button onClick={handleLoadExample} variant='outlined' color='secondary'>Load Example</Button>
-              <Typography variant='h6'>{rightFilename}</Typography>
-            </Stack>
-          </ItemContainer>
-        </Grid>
-        <Grid item>
-          <ItemContainer>
-            <Accordion variant='outlined' defaultExpanded={true}>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant={'h5'}>Record Data</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <SourceDescriptionsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>
-              </AccordionDetails>
-            </Accordion>
-          </ItemContainer>
-        </Grid>
-        <Grid item>
-          <ItemContainer>
-            <Accordion variant='outlined' defaultExpanded={true}>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant={'h5'}>Record Fields</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <FieldsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>
-              </AccordionDetails>
-            </Accordion>
-          </ItemContainer>
-        </Grid>
-        <Grid item>
-          <ItemContainer>
-            <Accordion variant='outlined' defaultExpanded={true}>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant='h5'>Persons</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <PersonsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>
-              </AccordionDetails>
-            </Accordion>
-          </ItemContainer>
-        </Grid>
-        <Grid item>
-          <ItemContainer>
-            <Accordion variant='outlined' defaultExpanded={true}>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant={'h5'}>Relationships</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <RelationshipsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>
-              </AccordionDetails>
-            </Accordion>
-          </ItemContainer>
-        </Grid>
-        <Grid item>
-          <ItemContainer>
-            <Accordion variant='outlined' defaultExpanded={true}>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant={'h5'}>Documents</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <DocumentsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>
-              </AccordionDetails>
-            </Accordion>
-          </ItemContainer>
-        </Grid>
-        <Grid item>
-          <Grid container spacing={1}>
-            <Grid item xs={4}>
-              <Tabs value={leftTab} onChange={(event, newValue) => setLeftTab(newValue)}>
-                <Tab label='Original'/>
-                <Tab label='Edited'/>
-              </Tabs>
-              <Box hidden={leftTab !== 0}>
-                <Typography variant='h5'>Original: {leftFilename}</Typography>
-                <GraphView gx={leftGxOriginal}/>
-              </Box>
-              <Box hidden={leftTab !== 1}>
-                <Typography variant='h5'>Edited: {leftFilename}</Typography>
-                <GraphView gx={leftGx}/>
-              </Box>
-            </Grid>
-            <Grid item xs={4}>
-              <Typography variant='h5'>Final GedcomX</Typography>
-              <GraphView gx={finalGx}/>
-            </Grid>
-            <Grid item xs={4}>
-              <Tabs value={rightTab} onChange={(event, newValue) => setRightTab(newValue)}>
-                <Tab label='Original'/>
-                <Tab label='Edited'/>
-              </Tabs>
-              <Box hidden={rightTab !== 0}>
-                <Typography variant='h5'>Original: {rightFilename}</Typography>
-                <GraphView gx={rightGxOriginal}/>
-              </Box>
-              <Box hidden={rightTab !== 1}>
-                <Typography variant='h5'>Edited: {rightFilename}</Typography>
-                <GraphView gx={rightGx}/>
-              </Box>
-            </Grid>
+      <Stack direction='row' justifyContent='space-between' alignItems='center'>
+        <Stack direction='row' alignItems='center' spacing={4}>
+          <FileUpload onChange={onFileUpload} allowedExtensions={['.json']}/>
+          <Button onClick={handleClearData} variant='contained' color='secondary'>Clear Data</Button>
+          <Button onClick={handleLoadExample} variant='outlined' color='secondary'>Load Example</Button>
+        </Stack>
+      </Stack>
+      <Stack spacing={1}>
+        <ItemContainer>
+          <Stack direction='row' justifyContent='space-between' alignItems='center'>
+            <Typography variant='h6'>{leftFilename}</Typography>
+            <Typography variant='h6'>{rightFilename}</Typography>
+          </Stack>
+        </ItemContainer>
+        <ItemContainer>
+          <Accordion variant='outlined' defaultExpanded={true}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant={'h5'}>Record Data</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <SourceDescriptionsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>
+            </AccordionDetails>
+          </Accordion>
+        </ItemContainer>
+        <ItemContainer>
+          <Accordion variant='outlined' defaultExpanded={true}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant={'h5'}>Record Fields</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <FieldsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>
+            </AccordionDetails>
+          </Accordion>
+        </ItemContainer>
+        <ItemContainer>
+          <Accordion variant='outlined' defaultExpanded={true}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant='h5'>Persons</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <PersonsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>
+            </AccordionDetails>
+          </Accordion>
+        </ItemContainer>
+        <ItemContainer>
+          <Accordion variant='outlined' defaultExpanded={true}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant={'h5'}>Relationships</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <RelationshipsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>
+            </AccordionDetails>
+          </Accordion>
+        </ItemContainer>
+        <ItemContainer>
+          <Accordion variant='outlined' defaultExpanded={true}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant={'h5'}>Documents</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <DocumentsDiff leftGx={leftGx} rightGx={rightGx} setLeftGx={setLeftGx} setRightGx={setRightGx} finalGx={finalGx} setFinalGx={setFinalGx}/>
+            </AccordionDetails>
+          </Accordion>
+        </ItemContainer>
+        <Grid container spacing={1}>
+          <Grid item xs={4}>
+            <Tabs value={leftTab} onChange={(event, newValue) => setLeftTab(newValue)}>
+              <Tab label='Original'/>
+              <Tab label='Edited'/>
+            </Tabs>
+            <Box hidden={leftTab !== 0}>
+              <Typography variant='h5'>Original: {leftFilename}</Typography>
+              <GraphView gx={leftGxOriginal}/>
+            </Box>
+            <Box hidden={leftTab !== 1}>
+              <Typography variant='h5'>Edited: {leftFilename}</Typography>
+              <GraphView gx={leftGx}/>
+            </Box>
+          </Grid>
+          <Grid item xs={4}>
+            <Typography variant='h5'>Final GedcomX</Typography>
+            <GraphView gx={finalGx}/>
+          </Grid>
+          <Grid item xs={4}>
+            <Tabs value={rightTab} onChange={(event, newValue) => setRightTab(newValue)}>
+              <Tab label='Original'/>
+              <Tab label='Edited'/>
+            </Tabs>
+            <Box hidden={rightTab !== 0}>
+              <Typography variant='h5'>Original: {rightFilename}</Typography>
+              <GraphView gx={rightGxOriginal}/>
+            </Box>
+            <Box hidden={rightTab !== 1}>
+              <Typography variant='h5'>Edited: {rightFilename}</Typography>
+              <GraphView gx={rightGx}/>
+            </Box>
           </Grid>
         </Grid>
-        <Grid item>
-          <Grid container spacing={2} justifyContent='space-around' sx={{marginY: 2}}>
-            <Grid item>
-              <Button variant='contained' size='large' color='secondary' onClick={() => handleDownload(leftGx, 'left.edit')}>Download Left In-Progress Record</Button>
-            </Grid>
-            <Grid item>
-              <Button variant='contained' size='large' onClick={() => handleDownload(finalGx, 'final')}>Download Final GedcomX Record</Button>
-            </Grid>
-            <Grid item>
-              <Button variant='contained' size='large' color='secondary' onClick={() => handleDownload(rightGx, 'right.edit')}>Download Right In-Progress Record</Button>
-            </Grid>
-          </Grid>
-        </Grid>
-      </Grid>
+        <Stack spacing={2} justifyContent='space-around' sx={{marginY: 2}} direction='row'>
+          <Button variant='contained' size='large' color='secondary' onClick={() => handleDownload(leftGx, 'left.edit')}>Download Left In-Progress Record</Button>
+          <Button variant='contained' size='large' onClick={() => handleDownload(finalGx, 'final')}>Download Final GedcomX Record</Button>
+          <Button variant='contained' size='large' color='secondary' onClick={() => handleDownload(rightGx, 'right.edit')}>Download Right In-Progress Record</Button>
+        </Stack>
+      </Stack>
     </RootContainer>
   )
 }
