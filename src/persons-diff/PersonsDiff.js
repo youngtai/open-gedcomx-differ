@@ -2,12 +2,13 @@ import {Grid} from "@mui/material";
 import PersonsList from "./PersonsList";
 import {RecordsDataContext} from "../RecordsContext";
 import {leftRecordsData, rightRecordsData} from "../EditPage";
-import {FACT_KEYS, NAME_PART_TYPE} from "../constants";
+import {FACT_KEYS, IGNORED_FACT_KEYS, NAME_PART_TYPE} from "../constants";
 
 function valuesAreEqual(valueA, valueB) {
   const sameType = valueA?.type === valueB?.type;
   const sameText = valueA?.text === valueB?.text;
-  return sameType && sameText;
+  const sameLabelId = valueA?.labelId === valueB?.labelId;
+  return sameType && sameText && sameLabelId;
 }
 
 function valueIsInValues(value, values) {
@@ -53,10 +54,10 @@ function qualifiersAreEqual(qualifierA, qualifierB) {
 function factsAreEqual(factA, factB) {
   const factAKeys = Object.keys(factA)
     .filter(key => factA[key] !== null)
-    .filter(key => key !== FACT_KEYS.id);
+    .filter(key => !IGNORED_FACT_KEYS.includes(key));
   const factBKeys = Object.keys(factB)
     .filter(key => factB[key] !== null)
-    .filter(key => key !== FACT_KEYS.id);
+    .filter(key => !IGNORED_FACT_KEYS.includes(key));
 
   if (factAKeys.length !== factBKeys.length) {
     return false;
@@ -74,7 +75,7 @@ function factsAreEqual(factA, factB) {
         return factA.qualifiers.every(qA => factB.qualifiers.find(qB => qualifiersAreEqual(qA, qB)) !== undefined);
       }
       return !factA.qualifiers && !factB.qualifiers;
-    } else if (factAKey === FACT_KEYS.id) {
+    } else if (IGNORED_FACT_KEYS.includes(factAKey)) {
       //ids can be different because this tool is for diffing independently created GedcomX
       return true;
     } else {

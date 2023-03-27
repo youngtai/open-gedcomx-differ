@@ -28,8 +28,20 @@ export const FACT_KEYS = {
   value: 'value',
   primary: 'primary',
   qualifiers: 'qualifiers',
-  id: 'id'
+  id: 'id',
+  fields: 'fields',
+  confidence: 'confidence',
+  formal: 'formal',
+  description: 'description',
 };
+
+export const IGNORED_FACT_KEYS = [
+  FACT_KEYS.id,
+  FACT_KEYS.fields,
+  FACT_KEYS.confidence,
+  FACT_KEYS.formal,
+  FACT_KEYS.description
+];
 
 export const COVERAGE_ATTRIBUTES = {
   spatial: 'spatial',
