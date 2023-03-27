@@ -1,11 +1,11 @@
 import './App.css';
-import EditPage from "./EditPage";
+import VisualGedcomxDiffer from "./VisualGedcomxDiffer";
 
 function App() {
 
   return (
     <div className="App">
-        <EditPage/>
+        <VisualGedcomxDiffer/>
     </div>
   );
 }

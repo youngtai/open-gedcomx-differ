@@ -1,6 +1,6 @@
 import {Grid} from "@mui/material";
 import {RecordsDataContext} from "../RecordsContext";
-import {leftRecordsData, rightRecordsData} from "../EditPage";
+import {leftRecordsData, rightRecordsData} from "../VisualGedcomxDiffer";
 import FieldsList from "./FieldsList";
 
 export function getFieldsIntersection(leftFields, rightFields) {

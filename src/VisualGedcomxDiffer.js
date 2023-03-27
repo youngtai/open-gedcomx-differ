@@ -20,7 +20,7 @@ import {
   Typography
 } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import './MainPage.css';
+import './VisualGedcomxDiffer.css';
 import PersonsDiff, {getPersonsIntersection} from "./persons-diff/PersonsDiff";
 import SourceDescriptionsDiff, {getRecordDataIntersection} from "./sourceDescriptions-diff/SourceDescriptionsDiff";
 import RelationshipsDiff, {getRelationshipsIntersection} from "./relationships-diff/RelationshipsDiff";
@@ -118,7 +118,7 @@ function normalizeGedcomx(gx) {
   return gx;
 }
 
-export default function EditPage() {
+export default function VisualGedcomxDiffer() {
   const assertionsContext = useContext(AssertionsContext);
   const [assertions, setAssertions] = useState(assertionsContext.assertions);
   const cachedData = localStorage.getItem(CACHE_KEY) ? JSON.parse(localStorage.getItem(CACHE_KEY)) : null;

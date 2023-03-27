@@ -1,7 +1,7 @@
 import {Grid} from "@mui/material";
 import PersonsList from "./PersonsList";
 import {RecordsDataContext} from "../RecordsContext";
-import {leftRecordsData, rightRecordsData} from "../EditPage";
+import {leftRecordsData, rightRecordsData} from "../VisualGedcomxDiffer";
 import {FACT_KEYS, IGNORED_FACT_KEYS, NAME_PART_TYPE} from "../constants";
 
 function valuesAreEqual(valueA, valueB) {

@@ -1,7 +1,7 @@
 import {Box, Grid, ListItemText} from "@mui/material";
 import EditableRecordSourceDescription from "./EditableRecordSourceDescription";
 import {RecordsDataContext} from "../RecordsContext";
-import {leftRecordsData, rightRecordsData} from "../EditPage";
+import {leftRecordsData, rightRecordsData} from "../VisualGedcomxDiffer";
 
 export function updateSourceDescriptionsData(recordsData) {
   const sourceDescriptions = recordsData.gx.sourceDescriptions;
